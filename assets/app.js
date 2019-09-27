@@ -1,5 +1,7 @@
 
 $(document).ready(function () {
+    var results;
+    var gifImage;
 
     var gifCategories = ["Shrek", "Shrek the Halls", "Shrek Ever After"];
 
@@ -16,7 +18,7 @@ $(document).ready(function () {
             .then(function (response) {
                 console.log(response);
 
-                var results = response.data;
+                 results = response.data;
 
                 for (var i = 0; i < results.length; i++) {
 
@@ -26,8 +28,12 @@ $(document).ready(function () {
                         var rating = results[i].rating;
                         var pRating = $("<p>").text("Rating: " + rating);
 
-                        var gifImage = $("<img>");
 
+
+
+                         gifImage = $("<img data-animate=" + results[i].images.fixed_height.url +" data-state='animate' data-still=" + results[i].images.fixed_height_still.url + ">");
+
+                        gifImage.addClass("giphy");
                         gifImage.attr("src", results[i].images.fixed_height.url);
 
                         gifDiv.append(pRating);
@@ -37,38 +43,65 @@ $(document).ready(function () {
                     }
                 };
             });
-        };
 
-        function renderButtons() {
-            $("#buttons-view").empty();
-            for (var i = 0; i < gifCategories.length; i++) {
-                var b = $("<button>");
+            $("#gif-view").on("click", ".giphy", function () {
+                // var animate = gifImage.attr("src", results[i].images.fixed_height.url);
+                // var still = gifImage.attr("src", results[i].images.original_still.url);
+        
+                // console.log(this);
+                // if (this === results[i].images.fixed_height.url) {
+                //     $(this).attr("src", results[i].images.fixed_height.url);
+                // } else {
+                //     $(this).attr("src", results[i].images.original_still.url);
+                // }
 
-                b.addClass("topics");
-                b.attr("data-name", gifCategories[i]);
-                // console.log(data);
-                
-                b.text(gifCategories[i]);
-                $("#buttons-view").append(b);
-            }
-            
-        };
+                var state = $(this).attr("data-state");
 
-        $("#find-gif").on("click", function (event) {
+                if (state === "still") {
 
-            console.log('clicked');
+                $(this).attr("src", $(this).attr("data-animate"));
+                $(this).attr("data-state", "animate")
+                }
 
-            event.preventDefault();
-            var gif = $("#gif-input").val().trim();
+                else {
+                $(this).attr("src", $(this).attr("data-still"));
+                $(this).attr("data-state", "still")
+                }
+        
+            });
+    };
 
-            gifCategories.push(gif);
-            console.log(gifCategories);
-            renderButtons();
-        });
 
-        $(document).on("click", ".topics", displayGif);
+    function renderButtons() {
+        $("#buttons-view").empty();
+        for (var i = 0; i < gifCategories.length; i++) {
+            var b = $("<button>");
+
+            b.addClass("topics");
+            b.attr("data-name", gifCategories[i]);
+            // console.log(data);
+
+            b.text(gifCategories[i]);
+            $("#buttons-view").append(b);
+        }
+
+    };
+
+    $("#find-gif").on("click", function (event) {
+
         console.log('clicked');
 
+        event.preventDefault();
+        var gif = $("#gif-input").val().trim();
+
+        gifCategories.push(gif);
+        console.log(gifCategories);
         renderButtons();
+    });
+
+    $(document).on("click", ".topics", displayGif);
+    console.log('clicked');
+
+    renderButtons();
 
 });
